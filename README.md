@@ -2,7 +2,7 @@
 
 # Automatizador de Compensaciones con IA
 
-Sistema de automatización end-to-end para el análisis y distribución de reportes de compensación, desarrollado con **n8n**, **Google Gemini** y aplicaciones de **Google**.
+Sistema de automatización end-to-end para el análisis y distribución de reportes de compensación, desarrollado con **n8n**, **Google Gemini** y aplicaciones de **Google Workspace**.
 
 ---
 
@@ -95,7 +95,7 @@ Generar reporte con Gemini 2.5 Flash (por empleado)
 | Herramienta | Uso |
 |------------|-----|
 | **n8n** (self-hosted) | Orquestación de flujos de automatización |
-| **Google Gemini 2.5 Flash** | Generación de reportes con IA |
+| **Google Gemini** | Generación de reportes con IA |
 | **Google Sheets** | Registro de empleados y trazabilidad |
 | **Google Drive** | Almacenamiento y control de acceso a reportes |
 | **Gmail** | Notificaciones automáticas |
@@ -107,11 +107,12 @@ Generar reporte con Gemini 2.5 Flash (por empleado)
 ## 📊 Estructura del CSV (Carga Masiva)
 
 ```csv
-Nombre,RUT,Cargo,Sueldo base,Bono,Fecha evaluación,Correo,Correo jefatura
-Francisco Rodriguez,12.543.656-3,Analista,1500000,200000,01-03-2024,empleado@email.com,jefatura@email.com
+Nombre;Correo;Correo jefatura;RUT;Cargo;Sueldo base;Bono;Fecha evaluación
+Nombre Apellido;empleado@correo.com;jefatura@correo.com;12.543.656-3;Analista;1500000;200000;01-03-2024
 ```
 
 ### Validaciones del formulario individual
+Para asegurar que los datos sean correctos se valida que:
 - **RUT:** formato `12.345.678-9`
 - **Sueldo/Bono:** formato `1.500.000`
 - **Fecha:** formato `DD-MM-YYYY`
@@ -124,7 +125,7 @@ Francisco Rodriguez,12.543.656-3,Analista,1500000,200000,01-03-2024,empleado@ema
 - Los reportes se comparten mediante **permisos individuales de Google Drive**
 - Cada empleado solo puede ver su propio reporte
 - Cada jefatura solo puede ver los reportes de sus empleados
-- n8n corre **localmente con Docker**, los datos no salen de la infraestructura propia
+- n8n corre **localmente con Docker**
 
 ---
 
@@ -199,9 +200,6 @@ automatizacion-compensaciones/
 **¿Por qué n8n self-hosted?**
 Permite mantener los datos dentro de la infraestructura propia, crítico para datos sensibles de compensaciones en una institución financiera.
 
-**¿Por qué Gemini 2.5 Flash?**
-Ofrece el mejor balance entre calidad de análisis y costo (~$0.30/1M tokens), siendo prácticamente gratuito para volúmenes de RRHH típicos.
-
 **¿Por qué Google Workspace?**
 Integración nativa entre Sheets, Drive, Forms y Gmail permite construir un ecosistema cohesivo sin dependencias externas complejas.
 
@@ -209,9 +207,10 @@ Integración nativa entre Sheets, Drive, Forms y Gmail permite construir un ecos
 
 ## ⚠️ Limitaciones y Mejoras Futuras
 
-- **Detección de carpetas duplicadas:** actualmente si se ejecuta dos veces el mismo día se crean carpetas duplicadas. Mejora: verificar existencia antes de crear.
-- **Rollback en errores:** si el proceso falla a mitad, las carpetas creadas quedan vacías. Mejora: implementar base de datos de control para limpieza automática.
-- **Escalabilidad:** para nóminas de miles de empleados, considerar n8n cloud o implementar rate limiting más robusto con Gemini.
+- **Personalizar el reporte para las jefaturas:** actualmente el reporte se crea en base a un prompt con Gemini. Mejora: incluir indicadores del área que evaluen el desempeño de los empleados y sugerir tomas de decisiones en base a ellos.
+- **Descarga de información:** el archivo está previamente subido a la carpeta de Drive. Mejora: incluir flujo que descargue la información desde portal o ERP usado.
+- **Rollback en errores:** si el proceso falla a mitad, las carpetas creadas quedan vacías. Mejora: implementar limpieza automática en caso de errores.
+- **Escalabilidad:** para nóminas de miles de empleados, considerar n8n cloud para garantizar disponibilidad 24/7.
 - **Portal de autoservicio:** reemplazar el email al empleado por un portal web donde pueda consultar su historial de compensaciones.
 
 ---
@@ -219,4 +218,4 @@ Integración nativa entre Sheets, Drive, Forms y Gmail permite construir un ecos
 ## 👤 Autor
 
 Javier Contreras  
-[LinkedIn](#) | [GitHub](#)
+[LinkedIn](https://www.linkedin.com/in/jconv/) | [GitHub](https://github.com/jarnecro)
