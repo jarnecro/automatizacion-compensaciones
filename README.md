@@ -59,7 +59,7 @@ El área de Compensaciones e Incentivos de RRHH enfrenta un proceso manual y rep
 
 ```csv
 Nombre;Correo;Correo jefatura;RUT;Cargo;Sueldo base;Bono;Fecha evaluación
-Nombre Apellido;empleado@correo.com;jefatura@correo.com;12.543.656-3;Analista;1500000;200000;01-03-2024
+Nombre Apellido;empleado@correo.com;jefatura@correo.com;12.543.656-3;Analista;1500000;200000;01-04-2026
 ```
 
 ### Validaciones del formulario individual
@@ -96,16 +96,6 @@ Para asegurar que los datos sean correctos se valida que:
 
 ### 1. Levantar n8n con Docker
 
-```bash
-docker run -it --rm \
-  --name n8n \
-  -p 5678:5678 \
-  -v n8n_data:/home/node/.n8n \
-  n8nio/n8n
-```
-
-Acceder en: `http://localhost:5678`
-
 ### 2. Configurar credenciales en n8n
 
 - **Google Sheets OAuth2:** Client ID y Secret de Google Cloud
@@ -116,8 +106,8 @@ Acceder en: `http://localhost:5678`
 ### 3. Importar workflows
 
 1. En n8n ir a **Workflows → Import**
-2. Importar `flujo-individual.json`
-3. Importar `flujo-masivo.json`
+2. Importar `Automatizador de Compensaciones Formulario.json`
+3. Importar `Automatizador de Compensaciones Masivo.json`
 4. Configurar credenciales en cada nodo
 5. Activar ambos workflows con **Publish**
 
@@ -129,17 +119,12 @@ Acceder en: `http://localhost:5678`
 automatizacion-compensaciones/
 │
 ├── workflows/
-│   ├── flujo-individual.json      # Workflow registro individual
-│   └── flujo-masivo.json          # Workflow carga masiva CSV
-│
-├── ejemplos/
-│   ├── plantilla-nomina.csv       # Plantilla CSV de ejemplo
-│   └── reporte-ejemplo.txt        # Ejemplo de reporte generado
+│   ├── Automatizador de Compensaciones Formulario.json      # Workflow registro individual
+│   └── Automatizador de Compensaciones Masivo.json          # Workflow carga masiva CSV
 │
 ├── capturas/
-│   ├── flujo-individual.png
-│   ├── flujo-masivo.png
-│   └── reporte-gemini.png
+│   ├── ejemplo-nomina.csv       # Ejemplo CSV
+│   └── ejemplo-reporte.txt        # Ejemplo de reporte generado
 │
 └── README.md
 ```
