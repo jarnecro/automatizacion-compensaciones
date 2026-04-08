@@ -31,8 +31,7 @@ El área de Compensaciones e Incentivos de RRHH enfrenta un proceso manual y rep
 
 ### Flujo 1: Registro Individual (Google Forms)
 
-<img width="962" height="420" alt="imagen" src="https://github.com/user-attachments/assets/bfa1566e-25d7-487d-b7df-048936f6841c" />
-
+<img width="3269" height="736" alt="imagen" src="https://github.com/user-attachments/assets/b0cb78fc-8a8f-4cc6-94dc-3c9978cd2cdb" />
 
 ```
 
@@ -58,6 +57,9 @@ Actualizar estado en Google Sheets
 ```
 
 ### Flujo 2: Carga Masiva CSV (Google Drive)
+
+<img width="3071" height="756" alt="imagen" src="https://github.com/user-attachments/assets/87765b65-7786-4d0c-acde-fb8dff044c24" />
+
 
 ```
 Google Drive Trigger (archivo nuevo en carpeta)
