@@ -1,0 +1,1249 @@
+{
+  "name": "Automatizador de Compensaciones Masivo",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un analista de compensaciones de RRHH. \nGenera un reporte profesional para el siguiente empleado:\n\nNombre: {{ $json['﻿Nombre'] }}\nCorreo: {{ $json.Correo }}\nJefatura: {{ $json['Correo jefatura'] }}\nRUT: {{ $json.RUT }}\nCargo: {{ $json.Cargo }}\nSueldo Base: ${{ $json[\"Sueldo base\"] }}\nBono: ${{ $json.Bono }}\nFecha Evaluación: {{ $json[\"Fecha evaluación\"] }}\n\nEl reporte debe incluir:\n1. Resumen ejecutivo del empleado\n2. Análisis de compensación total\n3. Comparativa bono/sueldo base (%)\n4. Recomendación de ajuste si corresponde\n\nNo hagas un reporte muy extenso"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        -160
+      ],
+      "id": "d4d65f26-dba7-476b-b726-49a77d56f622",
+      "name": "Generar reporte",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "z0P2nUPCDGY9ti7O",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -128,
+        112
+      ],
+      "id": "7d09fa7b-ec9c-4928-a59f-09b40e33a8fb",
+      "name": "Descargar archivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ";"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        112
+      ],
+      "id": "0f85c698-409d-4339-8ce8-02173b5fbcb9",
+      "name": "Extraer datos"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "newUpdatedFileName": "=Nominas {{ $('Crear carpeta Reportes').item.json.name.split(' ')[1] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        112
+      ],
+      "id": "f256b9d9-1440-47e1-85bd-ce8ce6d02d41",
+      "name": "Cambiar nombre",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Crear carpeta Reportes').item.json.id }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -336,
+        112
+      ],
+      "id": "1ccf0e39-ebbc-45b6-9d59-b09ee39cb693",
+      "name": "Mover archivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Reporte para Empleados",
+        "height": 304,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "39fe5a13-53a3-4ab4-9a6d-12bcc9b9cc32",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Descarga de información",
+        "height": 528,
+        "width": 2036
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1840,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "2131495f-0f34-46ab-b4bb-8670006b6a09",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Reporte jefaturas",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -944,
+        112
+      ],
+      "id": "e46df287-749b-4243-a392-eee0c3e8de14",
+      "name": "Crear carpeta Jefaturas",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Reporte empleados",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Crear carpeta Reportes').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -736,
+        112
+      ],
+      "id": "02ed5e4c-2641-45f6-a7db-4299b2eb64c7",
+      "name": "Crear carpeta Empleados",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Reportes {{ $now.format('dd-MM-yyyy_HH-mm') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1NGxjZW7ua-tuia-yU89y6YIu-BXT19c8",
+          "mode": "list",
+          "cachedResultName": "Carga Masiva",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1NGxjZW7ua-tuia-yU89y6YIu-BXT19c8"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        112
+      ],
+      "id": "cbec844a-8e27-48b5-a921-7331783e0d8d",
+      "name": "Crear carpeta Reportes",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1C-Syhyl5stsdtlRzA-4IWABFddZPivK2fYN0oNxOi9BPQ_oOllqpv0fbvaXCrRnEEGTxUYMD",
+            "mode": "list",
+            "cachedResultName": "Carga de nominas (File responses)",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1C-Syhyl5stsdtlRzA-4IWABFddZPivK2fYN0oNxOi9BPQ_oOllqpv0fbvaXCrRnEEGTxUYMD"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1584,
+        128
+      ],
+      "id": "10fe6b06-f7f2-4611-a05b-8724b4a32f12",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "No se han cargado las nominas a la carpeta de Drive"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        272
+      ],
+      "id": "465b3769-c7c7-469e-8122-8c048bdb7c3c",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "content": "## Crear carpetas jefaturas\nSe toman todos los correos de las jefaturas, se les quita los duplicados para luego crear en Drive solo una carpeta por jefatura.",
+        "height": 272,
+        "width": 772,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        864,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "ad629950-e9f3-40d7-8e0e-77461602fda5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9abb6a76-69fe-403b-9a55-e346a000d3b9",
+              "name": "Respuesta_Gemini",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "99f652d0-4964-465b-afce-01206f527d2b",
+              "name": "Nombre",
+              "value": "={{ $('Extraer datos').item.json['﻿Nombre'] }}",
+              "type": "string"
+            },
+            {
+              "id": "60329884-beef-45fb-8644-0e8173e419ef",
+              "name": "RUT",
+              "value": "={{ $('Extraer datos').item.json.RUT }}",
+              "type": "string"
+            },
+            {
+              "id": "f60bdd3b-0ee6-4786-b0dc-a74db399fb60",
+              "name": "IdJefatura",
+              "value": "={{ $('Extraer datos').item.json['Correo jefatura'].split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "173326fc-37ee-4d6a-964a-de3d662b0503",
+              "name": "Correo_jefatura",
+              "value": "={{ $('Extraer datos').item.json['Correo jefatura'] }}",
+              "type": "string"
+            },
+            {
+              "id": "fe4de011-75d0-4fb4-a011-afb92590d6bc",
+              "name": "IdCarpeta",
+              "value": "={{ $('Crear carpeta Jefaturas').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        -160
+      ],
+      "id": "3c11c032-85c1-4a4a-8ad6-f529e83b0293",
+      "name": "Construir tabla"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b69d32b4-d7ad-4cea-a57a-52ec048d6623",
+              "name": "Correo_jefatura",
+              "value": "={{ $json.Correo_jefatura }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        -320
+      ],
+      "id": "a3b3220f-61af-45a7-a507-ef764ac42c19",
+      "name": "Listar correos"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "Correo_jefatura",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        -320
+      ],
+      "id": "60ac8669-3aea-4739-b0ac-bc07bdcbc58c",
+      "name": "Remover correos duplicados"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $json['Correo_jefatura'].split('@')[0] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Construir tabla').item.json.IdCarpeta }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1520,
+        -320
+      ],
+      "id": "2826388a-c4bb-4f74-89ed-c9d66fb255ed",
+      "name": "Crear carpetas para jefaturas",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Unir tablas\nSe ocupa un join para obtener el id de la carpeta segun el correo de la jefatura.",
+        "height": 288,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "41a753f9-24d8-43c4-a856-318b37ff6732",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Compartir carpetas a jefaturas\nSe usa un join para obtener el correo de la jefatura segun el id de la carpeta.",
+        "height": 240,
+        "width": 560,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        -544
+      ],
+      "typeVersion": 1,
+      "id": "116bc4f8-75d1-4b28-9485-e0146c60a18e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "Nombre"
+            },
+            {
+              "field": "Nombre"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "Correo_jefatura,  IdCarpetaJefatura",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        -320
+      ],
+      "id": "bf1ba4f2-0d5a-4f90-9e80-9d96be03e1e2",
+      "name": "Resumir datos",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Correo_jefatura }}",
+        "subject": "=Reporte de Compensaciones",
+        "message": "=Estimado/a equipo,<p>\n\n✅ Se procesaron exitosamente {{ $json.count_Nombre }} empleados.<p>\n\n📂 Reportes disponibles en Google Drive: <a href=\"https://drive.google.com/drive/folders/{{ $json.IdCarpetaJefatura }}\"> Ver reportes en Drive</a><p>\n\nSaludos,<br>\nSistema Automatizado de Compensaciones",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2816,
+        -320
+      ],
+      "id": "d2cdcd3b-dad1-4fee-9b0c-0ca2534d00ce",
+      "name": "Enviar correos a jefaturas",
+      "webhookId": "781341a9-5e8c-475e-95ab-65ccd12dce4d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BGv9tNUaCUT6y2In",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Extraer datos').item.json.Correo }}",
+        "subject": "=Reporte de Compensación - {{ $('Extraer datos').item.json['﻿Nombre'] }}",
+        "message": "=Estimado/a {{ $('Extraer datos').item.json['﻿Nombre'] }},<p>\n\nSu reporte está disponible en el <a href=\"https://drive.google.com/drive/folders/{{ $('Crear archivos desde un texto1').item.json.id }}\">archivo adjunto</a><p>\n\nSaludos,<br>\nSistema Automatizado de Compensaciones",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        400
+      ],
+      "id": "a28f5faf-4fa3-4689-9f79-1e77bcbf58b1",
+      "name": "Enviar correos a empleados",
+      "webhookId": "76c2acfe-ab98-4e72-9140-3ddca21e4edc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BGv9tNUaCUT6y2In",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "user",
+            "emailAddress": "={{ $('Extraer datos').item.json.Correo }}"
+          }
+        },
+        "options": {
+          "sendNotificationEmail": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        400
+      ],
+      "id": "c43eeb77-da9f-4749-b171-9af891f10c77",
+      "name": "Compartir archivos a empleados",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Solo para esperar que ambos inputs se ejecuten.",
+        "height": 208,
+        "width": 224,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2112,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "44c62e06-6d02-4c05-a578-b76f7f3fa3e7",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1C-Syhyl5stsdtlRzA-4IWABFddZPivK2fYN0oNxOi9BPQ_oOllqpv0fbvaXCrRnEEGTxUYMD",
+          "mode": "list",
+          "cachedResultName": "Carga de nominas (File responses)",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1C-Syhyl5stsdtlRzA-4IWABFddZPivK2fYN0oNxOi9BPQ_oOllqpv0fbvaXCrRnEEGTxUYMD"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2864,
+        96
+      ],
+      "id": "578e0908-62ef-4526-ae47-4facd1ea08e9",
+      "name": "Trigger Carga CSV",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        128
+      ],
+      "id": "e96364ff-669c-45c0-b254-aac765e097bb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "operation": "share",
+        "folderNoRootId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "user",
+            "emailAddress": "={{ $json.Correo_jefatura }}"
+          }
+        },
+        "options": {
+          "sendNotificationEmail": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1952,
+        -464
+      ],
+      "id": "e4223152-99d5-40a4-8a83-6b779fb6dc69",
+      "name": "Compartir carpeta",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "IdJefatura",
+              "field2": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1760,
+        -464
+      ],
+      "id": "f4079cf6-cf1f-405c-a0f3-56675c8e0964",
+      "name": "Unir tablas"
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql",
+        "query": "SELECT \n  input2.Respuesta_Gemini,\n  input2.Nombre,\n  input2.RUT,\n  input2.Correo_jefatura,\n  input2.name,\n  input1.id AS IdCarpetaJefatura\nFROM input2\nLEFT JOIN input1\nON input2.IdJefatura = input1.name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1760,
+        -32
+      ],
+      "id": "d89e6653-1137-4c59-af9c-755acd340997",
+      "name": "Unir tablas1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6066c91-0a02-412b-bf2e-94c91b38291d",
+              "name": "IdJefatura",
+              "value": "={{ $json.Correo_jefatura.split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "032f4633-1d4f-46f0-a5d8-10efd7025356",
+              "name": "Correo_jefatura",
+              "value": "={{ $json.Correo_jefatura }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        -320
+      ],
+      "id": "6cda7624-fac4-4ff3-b9ae-6b73c0ce8222",
+      "name": "Agregar correo jefatura"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2176,
+        -176
+      ],
+      "id": "a7b74c3c-94e8-47ec-a0c4-2452102d3e56",
+      "name": "Unir tablas2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f44858b0-e906-4262-a441-729b1f6ab4a5",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        -176
+      ],
+      "id": "b67e2807-8230-44e4-a65f-70d6c64dc3e2",
+      "name": "Tomar datos tabla original"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "672c7ed9-6eba-4f3f-8b1b-7ee6dbaa5cc5",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1376,
+        128
+      ],
+      "id": "461e4d54-999c-4d77-96e4-0ad090709c67",
+      "name": "¿Hay archivos?"
+    },
+    {
+      "parameters": {
+        "content": "# Reporte para Jefaturas",
+        "height": 752,
+        "width": 2724
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "8d377fc4-c884-406b-8f69-0c501f4d02b9",
+      "name": "Crear reportes desde un texto"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.Respuesta_Gemini }}",
+        "name": "=Reporte {{ $json.Nombre }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.IdCarpetaJefatura }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        -32
+      ],
+      "id": "a57d1514-27f9-477f-86db-e54db78a2685",
+      "name": "Crear archivos desde un texto",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "=Estimado/a {{ $('Extraer datos').item.json['﻿Nombre'] }},\n\nTu análisis de compensación ha sido procesado exitosamente.\n\n💼 Cargo: {{ $('Extraer datos').item.json.Cargo }}\n💰 Sueldo base: ${{ $('Extraer datos').item.json['Sueldo base'] }}\n🎯 Bono: ${{ $('Extraer datos').item.json.Bono }}\n\nPara más detalles, contacta a tu área de RRHH.\n\nSaludos,\nSistema Automatizado de Compensaciones",
+        "name": "=Reporte de Compensación - {{ $json['﻿Nombre'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Crear carpeta Empleados').first().json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        400
+      ],
+      "id": "534a856f-a109-4484-a3bb-948c2dc21637",
+      "name": "Crear archivos desde un texto1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DJ7cjPGaxPBJJ2E8",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Generar reporte": {
+      "main": [
+        [
+          {
+            "node": "Construir tabla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar archivo": {
+      "main": [
+        [
+          {
+            "node": "Extraer datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer datos": {
+      "main": [
+        [
+          {
+            "node": "Generar reporte",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Crear archivos desde un texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cambiar nombre": {
+      "main": [
+        [
+          {
+            "node": "Mover archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover archivo": {
+      "main": [
+        [
+          {
+            "node": "Descargar archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpeta Jefaturas": {
+      "main": [
+        [
+          {
+            "node": "Crear carpeta Empleados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpeta Empleados": {
+      "main": [
+        [
+          {
+            "node": "Cambiar nombre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpeta Reportes": {
+      "main": [
+        [
+          {
+            "node": "Crear carpeta Jefaturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "¿Hay archivos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir tabla": {
+      "main": [
+        [
+          {
+            "node": "Unir tablas1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Listar correos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar correos": {
+      "main": [
+        [
+          {
+            "node": "Remover correos duplicados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remover correos duplicados": {
+      "main": [
+        [
+          {
+            "node": "Agregar correo jefatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpetas para jefaturas": {
+      "main": [
+        [
+          {
+            "node": "Unir tablas1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Unir tablas",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Resumir datos": {
+      "main": [
+        [
+          {
+            "node": "Enviar correos a jefaturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar correos a jefaturas": {
+      "main": [
+        []
+      ]
+    },
+    "Enviar correos a empleados": {
+      "main": [
+        []
+      ]
+    },
+    "Compartir archivos a empleados": {
+      "main": [
+        [
+          {
+            "node": "Enviar correos a empleados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compartir carpeta": {
+      "main": [
+        []
+      ]
+    },
+    "Unir tablas": {
+      "main": [
+        [
+          {
+            "node": "Compartir carpeta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unir tablas1": {
+      "main": [
+        [
+          {
+            "node": "Crear archivos desde un texto",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Unir tablas2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar correo jefatura": {
+      "main": [
+        [
+          {
+            "node": "Unir tablas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Crear carpetas para jefaturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unir tablas2": {
+      "main": [
+        [
+          {
+            "node": "Tomar datos tabla original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tomar datos tabla original": {
+      "main": [
+        [
+          {
+            "node": "Resumir datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "¿Hay archivos?": {
+      "main": [
+        [
+          {
+            "node": "Crear carpeta Reportes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear archivos desde un texto": {
+      "main": [
+        [
+          {
+            "node": "Unir tablas2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Crear archivos desde un texto1": {
+      "main": [
+        [
+          {
+            "node": "Compartir archivos a empleados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "wZISeq3ZPnLUnBRr",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "b996f2e4-11e1-492d-be95-a20476b8b4be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "25878e228a42e52c4fde0f3745795bc108584d598e2a3f12bef9939ad3198312"
+  },
+  "id": "5Fq9Ol5izgoquugO",
+  "tags": []
+}
