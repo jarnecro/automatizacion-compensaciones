@@ -32,6 +32,8 @@ El área de Compensaciones e Incentivos de RRHH enfrenta un proceso manual y rep
 ### Flujo 1: Registro Individual (Google Forms)
 
 ```
+<img width="962" height="420" alt="imagen" src="https://github.com/user-attachments/assets/5b7ad6ff-39fa-47c9-ac59-fe1a171ac5b0" />
+
 Google Sheets Trigger (fila nueva)
         ↓
 Verificar líneas no procesadas (IF Estado vacío)
