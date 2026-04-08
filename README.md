@@ -33,60 +33,11 @@ El área de Compensaciones e Incentivos de RRHH enfrenta un proceso manual y rep
 
 <img width="3269" height="736" alt="imagen" src="https://github.com/user-attachments/assets/b0cb78fc-8a8f-4cc6-94dc-3c9978cd2cdb" />
 
-```
-
-Google Sheets Trigger (fila nueva)
-        ↓
-Verificar líneas no procesadas (IF Estado vacío)
-        ↓
-Generar reporte con Gemini 2.5 Flash
-        ↓
-┌─────────────────────────────────┐
-│     Reporte para Empleados      │
-│  Crear archivo txt → Compartir  │
-│  con empleado → Enviar email    │
-└─────────────────────────────────┘
-        ↓
-┌─────────────────────────────────┐
-│     Reporte para Jefaturas      │
-│  Crear carpetas por jefatura →  │
-│  Compartir → Resumir → Email    │
-└─────────────────────────────────┘
-        ↓
-Actualizar estado en Google Sheets
-```
 
 ### Flujo 2: Carga Masiva CSV (Google Drive)
 
 <img width="3071" height="756" alt="imagen" src="https://github.com/user-attachments/assets/87765b65-7786-4d0c-acde-fb8dff044c24" />
 
-
-```
-Google Drive Trigger (archivo nuevo en carpeta)
-        ↓
-Verificar que existan archivos CSV
-        ↓
-Crear carpetas (Reportes, Jefaturas, Empleados)
-        ↓
-Renombrar y mover CSV a carpeta procesados
-        ↓
-Descargar y extraer datos del CSV
-        ↓
-Generar reporte con Gemini 2.5 Flash (por empleado)
-        ↓
-┌─────────────────────────────────┐
-│     Reporte para Empleados      │
-│  Crear archivo → Compartir →    │
-│  Enviar email personalizado     │
-└─────────────────────────────────┘
-        ↓
-┌─────────────────────────────────┐
-│     Reporte para Jefaturas      │
-│  Crear carpeta por jefatura →   │
-│  Compartir → Email con resumen  │
-│  agrupado por jefatura          │
-└─────────────────────────────────┘
-```
 
 ---
 
