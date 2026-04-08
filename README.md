@@ -1,6 +1,6 @@
 # automatizacion-compensaciones
 
-# 🤖 Automatizador de Compensaciones con IA
+# Automatizador de Compensaciones con IA
 
 Sistema de automatización end-to-end para el análisis y distribución de reportes de compensación, desarrollado con **n8n**, **Google Gemini** y aplicaciones de **Google**.
 
